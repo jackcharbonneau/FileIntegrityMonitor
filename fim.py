@@ -9,18 +9,23 @@ import datetime
 
 
 def main():
-    #  parse arguments
+    """Take a new file and create a checksum from it for future integrity
+    checks or verify and output the integrity of all files currently in
+    the monitors list
+    """
     new_file = parse()
 
-    #  determine choice pased on args
+    #  If no file was provided, run integrity check.
     if new_file is None:
         valids = loadChecksums()
         checkIntegrity(valids)
+    #  If a file was provided, add its checksum for future integrity checks.
     else:
         addFile(new_file)
 
 
 def parse():
+    """Parse argument for a new file"""
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', type=str, dest='new_file',
                         help='specify a new file to add to the' +
@@ -31,7 +36,7 @@ def parse():
 
 
 def loadChecksums():
-    #  Load in database/file
+    """Load in valid_checksums.csv"""
     try:
         with open("valid_checksums.csv", newline='') as f:
             reader = csv.reader(f)
@@ -43,23 +48,22 @@ def loadChecksums():
 
 
 def checkIntegrity(valids):
-    #  For each file
+"""Verify the checksum for each file in the csv and print whether not the
+file has maintained its integrity.
+"""
+
     for file in valids:
-        #  Get checksum
         hash = hashlib.sha256()
         try:
             with open(file[0], 'rb') as f:
                 for data in iter(lambda: f.read(4096), b''):
                     hash.update(data)
 
-                #  Compare checksums
                 if hash.hexdigest() == file[1]:
-                    #  if valid report valid and update datetime
                     file[2] = datetime.datetime.now()
                     print("[+] integrity secure: %s " % file[0])
 
                 else:
-                    #  if invalid report invalid state last valid datetime
                     print("[-] integrity not secure: %s " % file[0])
                     print("[-] last valid integrity check: %s " % file[2])
         except:
@@ -67,6 +71,7 @@ def checkIntegrity(valids):
 
 
 def addFile(file_path):
+    """Take the checksum of a new file and add it to valid_checksums.csv"""
     hash = hashlib.sha256()
     try:
         with open(file_path, 'rb') as new_file:
