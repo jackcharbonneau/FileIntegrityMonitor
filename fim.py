@@ -48,9 +48,9 @@ def loadChecksums():
 
 
 def checkIntegrity(valids):
-"""Verify the checksum for each file in the csv and print whether not the
-file has maintained its integrity.
-"""
+    """Verify the checksum for each file in the csv and print whether not the
+    file has maintained its integrity.
+    """
 
     for file in valids:
         hash = hashlib.sha256()
